@@ -6,3 +6,27 @@
 
 Package lazy is a light wrapper around sync.Once providing support for return values.
 It removes the burden of capturing return values via closures from the caller.
+
+```golang
+// server.go
+type server struct {
+  DB func() *sql.DB
+}
+
+func (s *server) someHttpHandler(w http.ResponseWriter, r *http.Request) {
+  db := s.DB()
+  _ = db // use db throughout the handler
+}
+
+// db.go
+func newDB() *sql.DB {
+  // ommitted
+}
+
+// main.go
+s := server {
+  DB: lazy.Lazy(newDB),
+}
+
+s.ListenAndServe()
+```
